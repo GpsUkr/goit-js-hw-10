@@ -1,70 +1,97 @@
 import './css/styles.css';
-import fetchCountries from '../src/js/fetchCountries.js';
-import Lodash from 'lodash.debounce';
-import Notiflix from 'notiflix';
+import { Notify } from 'notiflix/build/notiflix-notify-aio';
+import debounce from 'lodash.debounce';
+import { fetchCountries } from './js/fetchCountries';
 
 const DEBOUNCE_DELAY = 300;
 
-const refs = {
-    input: document.querySelector('#search-box'),
-    countryList: document.querySelector('.country-list'),
-    countryInfo: document.querySelector('.country-info'),
-};
+const countriesList = document.querySelector('.country-list');
+const countryInfo = document.querySelector('.country-info');
+const searchBox = document.querySelector('#search-box');
+const body = document.querySelector('body');
 
-refs.input.addEventListener('input', Lodash(onInputField, DEBOUNCE_DELAY));
+body.style.backgroundImage =
+    'radial-gradient( circle 610px at 5.2% 51.6%,  rgba(5,8,114,1) 0%, rgba(7,3,53,1) 97.5% )';
+countriesList.style.visibility = 'hidden';
+countryInfo.style.visibility = 'hidden';
 
-function onInputField(e) {
-    const countries = e.target.value.trim();
+searchBox.addEventListener('input', debounce(onInputSearch, DEBOUNCE_DELAY));
 
-    if (countries === '') {
-        refs.countryInfo.innerHTML = '';
-        refs.countryList.innerHTML = '';
+function onInputSearch(e) {
+    const value = searchBox.value.trim();
+    console.log(value);
+
+    if (!value) {
+        addHidden();
+        clearInterfaceUI();
         return;
     }
 
-    fetchCountries(countries)
-        .then(renderCountriesInfo)
-        .catch(error => Notiflix.Notify.failure('Oops, there is no country with that name'));
-}
-
-function renderCountriesInfo(countries) {
-    if (countries.length > 10) {
-        Notiflix.Notify.info('Too many matches found. Please enter a more specific name.');
-        refs.countryList.innerHTML = '';
-    }
-
-    const markup = countries
-        .map(({ name, capital, population, flags, languages }) => {
-            return `<img src="${flags.svg}" alt="${name.official}" width="30px">
-          <h1 class="official-name">${name.official}</h1>
-          <p><b>Capital:</b> ${capital}</p>
-          <p><b>Population:</b> ${population}</p>
-          <p><b>Langueges:</b> ${Object.values(languages)}</p>`;
+    fetchCountries(value)
+        .then(data => {
+            if (data.length > 10) {
+                Notify.info(
+                    'Too many matches found. Please enter a more specific name.'
+                );
+            }
+            renderCountries(data);
         })
-        .join('');
-    refs.countryInfo.innerHTML = markup;
-
-    if (countries.length > 1) {
-        refs.countryInfo.innerHTML = '';
-    }
-
-    renderCountriesList(countries);
+        .catch(err => {
+            clearInterfaceUI();
+            Notify.failure('Oops, there is no country with that name');
+        });
 }
 
-function renderCountriesList(countries) {
-    if (countries.length >= 2 && countries.length <= 10) {
-        const markup = countries
-            .map(({ name, flags }) => {
-                return `<li>
-        <img src="${flags.svg}" alt="${name.official}" width="30px">
-        <p class="official-name"><b>${name.official}</b>
-      </li>`;
-            })
-            .join('');
-        refs.countryList.innerHTML = markup;
-    }
+const generateMarkupCountryInfo = data =>
+    data.reduce(
+        (acc, { flags: { svg }, name, capital, population, languages }) => {
+            console.log(languages);
+            languages = Object.values(languages).join(', ');
+            console.log(name);
+            return (
+                acc +
+                ` <img src="${svg}" alt="${name}" width="320" height="auto">
+            <p> ${name.official}</p>
+            <p>Capital: <span> ${capital}</span></p>
+            <p>Population: <span> ${population}</span></p>
+            <p>Languages: <span> ${languages}</span></p>`
+            );
+        },
+        ''
+    );
 
-    if (countries.length === 1) {
-        refs.countryList.innerHTML = '';
+const generateMarkupCountryList = data =>
+    data.reduce((acc, { name: { official, common }, flags: { svg } }) => {
+        return (
+            acc +
+            `<li>
+        <img src="${svg}" alt="${common}" width="70">
+        <span>${official}</span>
+      </li>`
+        );
+    }, '');
+
+function renderCountries(result) {
+    if (result.length === 1) {
+        countriesList.innerHTML = '';
+        countriesList.style.visibility = 'hidden';
+        countryInfo.style.visibility = 'visible';
+        countryInfo.innerHTML = generateMarkupCountryInfo(result);
     }
+    if (result.length >= 2 && result.length <= 10) {
+        countryInfo.innerHTML = '';
+        countryInfo.style.visibility = 'hidden';
+        countriesList.style.visibility = 'visible';
+        countriesList.innerHTML = generateMarkupCountryList(result);
+    }
+}
+
+function clearInterfaceUI() {
+    countriesList.innerHTML = '';
+    countryInfo.innerHTML = '';
+}
+
+function addHidden() {
+    countriesList.style.visibility = 'hidden';
+    countryInfo.style.visibility = 'hidden';
 }
