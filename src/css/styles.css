@@ -1,90 +1,69 @@
- ul{
- list-style-type: none; 
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
+    Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #fafafa;
+  color: #212121;
+  line-height: 1.5;
 }
 
 #search-box {
-  display: block;
-  margin: 0 auto;
-  margin-top: 6.25rem;
-
   font: inherit;
-  padding: 0.3125rem 0.9375rem;
-  max-width: 20rem;
-  width: 20rem;
-  height: 2.75rem;
+  padding: 10px;
+  max-width: 320px;
   margin-bottom: 16px;
-
-  border: none;
-  outline: none;
-  border-radius: 3.125rem;
-
-  background: transparent;
-  color: #03f47b;
-  font-weight: 600;
-  font-size: 0.875rem;
-  box-shadow: inset -2px -2px 6px rgba(255, 255, 255, 0.1),
-    inset 2px 2px 6px rgba(0, 0, 0, 0.75);
+  font-size: 25px;
+  border: 2px solid black;
 }
-
-.country-list,
-.country-info {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  margin-right: auto;
-  margin-left: auto;
-  padding: 1.875rem;
-  gap: 0.9375rem;
-
-  min-width: 9.375rem;
-  max-width: 37.5rem;
-  min-height: 8.125rem;
-
-  backdrop-filter: blur(22px);
-  box-shadow: inset 0 0 0 400px rgba(255, 255, 255, 0.074);
-  background-color: transparent;
-  color: #e6e6e6;
-
-  border-radius: 0.75rem;
-  border: 0.1875rem solid rgba(255, 255, 255, 0.12);
-
-  animation: color-change-2x 2s linear infinite alternate both;
+#search-box::placeholder {
+  font-size: 18px;
 }
-
-@keyframes color-change-2x {
-  0% {
-    background: #48e7f31c;
-  }
-  100% {
-    background: #b041f11a;
-  }
-}
-
-.country-info img {
-  margin: 0 auto;
-  display: block;
-}
-
-.country-list span {
-  display: inline-block;
-  font-size: 1.25rem;
-  vertical-align: super;
-}
-img + p {
-  font-weight: 700;
-  color: #ffffff;
-  text-align: center;
-}
-
-p {
-  color: #03a9f4;
-  margin-top: 0rem;
-  margin-bottom: 0.625rem;
-}
-p > span {
-  color: #ffffff;
-}
-
 ul {
   list-style: none;
+  margin: 0;
+  padding: 0;
+  background-color: white;
+  
+}
+.country-card {
+  display: inline-block;
+  padding: 50px;
+  border: 1px solid #eeeeee;
+  box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.12), 0px 4px 4px rgba(0, 0, 0, 0.06), 1px 4px 6px rgba(0, 0, 0, 0.16);
+}
+.country-card--header {
+  display: flex;
+  align-items: center;
+}
+.country-card--name {
+  margin: 0;
+  padding: 0;
+  font-size: 40px;
+  font-weight: 500;
+  margin-left: 10px;
+}
+.country-card--field {
+  font-weight: bold;
+}
+.country-list--item {
+  display: flex;
+  align-items: center;
+  
+}
+.country-list--item:not(:last-child) {
+  margin-bottom: 5px;
+}
+.country-list--name {
+  font-weight: 500;
+  margin-left: 10px;
+
+}
+.country-value {
+  font-weight: normal;
+  font-size: 20px;
 }
